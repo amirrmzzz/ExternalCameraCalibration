@@ -1,0 +1,44 @@
+import cv2
+
+while True:
+    # Get input from the user
+    inputed = input("Enter 1 to capture and save images, or any other key to exit: ")
+
+    if inputed == "1":
+        # Get the number of images to save
+        num_images = int(input("Enter the number of images to save: "))
+
+        # Open the camera
+        cap = cv2.VideoCapture(3)  # Assuming the camera index is 3
+
+        if not cap.isOpened():
+            print("Error opening camera")
+            break
+
+        for i in range(num_images):
+            # Capture a frame from the camera
+            shutter = input('enter 1 to capture')
+            if shutter == '1':
+                ret, frame = cap.read()
+            if shutter != '1' : break
+
+            if not ret:
+                print("Error capturing frame")
+                break
+
+            # Save the frame as an image file
+            filename = f"/home/amir/python.code/image{i}.jpg"
+            cv2.imwrite(filename, frame)
+
+            # Display the frame
+            cv2.imshow('Frame', frame)
+            cv2.waitKey(2000)  # Show the frame for 1 millisecond
+
+        # Close the camera
+        cap.release()
+
+    else:
+        # If the user enters anything other than "1", break out of the loop
+        break
+
+cv2.destroyAllWindows()  # Close all open windows
