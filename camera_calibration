@@ -1,0 +1,58 @@
+import numpy as np
+import cv2 as cv
+import glob
+
+# find chess board
+ChessBoardSize = (8,6)
+FrameSize = (640 , 480)
+
+
+#termination criteria
+criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+
+# prepare object points
+objp = np.zeros((8*6 , 3),np.float32)
+for row in range(8):
+    for col in range(6):
+        # Set the 3D coordinates of the current chessboard corner
+        objp[row * 6 + col, 0] = col
+        objp[row * 6 + col, 1] = row
+        objp[row * 6 + col, 2] = 0  # Assuming all corners have the same z-coordinate of 0
+
+#objp[:,:2] = np.mgrid[0:8 , 0:6 , 3].T.reshape(-1 , 2)
+objpoints = [] # 3d point in real world space
+imgpoints = [] # 2d points in image plane.
+
+
+
+#load images and Gray scaling
+images = glob.glob('*.jpg')
+for image in images:
+  print(image)
+  img = cv.imread(image)
+  imgGray = cv.cvtColor(img  , cv.COLOR_BGR2GRAY)
+  #Find chess board corners
+  ret , corners = cv.findChessboardCorners(imgGray, ChessboardSize , None)
+  #if found ,add object points
+  if ret == 1:
+    objpoints.append(objp)
+    corners2 = cv.cornerSubPix(imgGray ,corners , (11 , 11), (-1 , -1) , criteria )
+    imgpoints.append(corners)
+
+    #draw and display the corners
+    cv.drawChessboardCorners(img , ChessBoardSize , corners2 , ret)
+    cv.imshow('img',img)
+    cv.waitKey(1000)
+cv.destroyAllWindows()
+print(images)
+
+
+
+#camera calibration
+ret , cameraMatrix , dist , rvecs , tvecs = cv.calibrateCamera( objpoints , imgpoints , FrameSize , None , None )
+print("Camerava calibrated :" , ret)
+print("\nCamera matrix: \n" , cameraMatrix)
+print("\n Distribtion parameter:\n" , dist)
+print("\n Rotation matrix\n", rvecs   )
+print("\n Translation matrix \n", tvecs  )
