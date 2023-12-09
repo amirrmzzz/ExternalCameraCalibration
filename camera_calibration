@@ -56,3 +56,8 @@ print("\nCamera matrix: \n" , cameraMatrix)
 print("\n Distribtion parameter:\n" , dist)
 print("\n Rotation matrix\n", rvecs   )
 print("\n Translation matrix \n", tvecs  )
+
+fname = "data.yaml"
+import yaml
+with open(fname, "w") as f:
+    yaml.dump(data, f)
